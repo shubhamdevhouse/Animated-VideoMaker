@@ -1,0 +1,336 @@
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+var json='{"name":"Project Name","uploadedMedia":[{"type":"photo","thumbnail":"http://192.168.1.107:82/assets/Image/id/print.jpg","url":"http://192.168.1.107:82/assets/Image/id/print.jpg"},{"type":"video","thumbnail":"http://192.168.1.107:82/assets/Footage/id/o.jpg","url":"http://192.168.1.107:82/assets/Footage/id/720p-sample1.mp4"},{"type":"photo","thumbnail":"http://192.168.1.107:82/assets/Image/id/o.jpg","url":"http://192.168.1.107:82/assets/Image/id/o.jpg"},{"type":"video","thumbnail":"http://192.168.1.107:82/assets/Footage/id/360p-sample1.jpg","url":"http://192.168.1.107:82/assets/Footage/id/270p-sample1.mp4"}],"global":{"backgroundMusic":{"source":"http://192.168.1.107:82/assets/Audio/audio.mpeg","volume":0.5,"loop":true,"trimAudio":{"trim":false,"value":{"start":0,"end":34}}},"filter":"none","aspectRatio":"landscape","style":"hiRise","font":"Roboto","watermark":{"source":"xxx","position":"top-right","size":"medium","transparency":true}},"blocks":[]}';
+var counter = 0;
+var js_parsed = JSON.parse(json);
+console.log(js_parsed["blocks"]);
+function deleteId(id){
+	js_parsed["blocks"].splice(id,1);
+}
+function copyId(id){
+	var currentBox = js_parsed["blocks"][id];
+	console.log(id,js_parsed["blocks"]);
+	js_parsed["blocks"].push(currentBox);
+	var newRow = $("<tr>");
+        var cols = "";
+        cols += '<td class="col-sm-1" disabled><input type="text" id="c_"+id+"source_url" class="form-control" value="'+currentBox.background.media+'" /></td>';
+		if(currentBox.type=="video"){
+		   cols += '<td class="col-sm-1" disabled><select id="c_"+id+"type"  class="form-control"><option id="c_"+id+"video" selected>Video</option><option id="c_"+id+"photo">Photo</option></select></td>'
+		}else if(currentBox.type=="photo"){
+		   cols += '<td class="col-sm-1" disabled><select id="c_"+id+"type"  class="form-control"><option id="c_"+id+"video">Video</option><option id="c_"+id+"photo" selected>Photo</option></select></td>'
+		}else if(currentBox.type=="text"){
+		   cols += '<td class="col-sm-1" disabled><select id="c_"+id+"type"  class="form-control"><option id="c_"+id+"video">Video</option><option id="c_"+id+"photo">Photo</option></select></td>'     
+		}
+        cols += '<td class="col-sm-1" disabled><input type="number" id="c_"+id+"timing"  class="form-control" value="'+currentBox.timing+'"/></td>';
+		cols += '<td class="col-sm-6" disabled><input type="text" id="c_"+id+"title"  class="form-control" value="'+currentBox.text.title.content+'"/></td>';
+		cols += '<td class="col-sm-6" disabled><input type="text" id="c_"+id+"subtitle"  class="form-control" value="'+currentBox.text.subTitle.content+'"/></td>';
+	
+		if(currentBox.text.align.horizontal=="left"){
+		cols += '<td class="col-sm-1" disabled><select id="c_"+id+"alignmentH"  class="form-control"><option id="c_"+id+"left" selected>Left</option><option id="c_"+id+"right">Right</option><option id="c_"+id+"center">Center</option></select></td>';
+		}else if(currentBox.text.align.horizontal=="right"){
+		cols += '<td class="col-sm-1" disabled><select id="c_"+id+"alignmentH"  class="form-control"><option id="c_"+id+"left">Left</option><option id="c_"+id+"right" selected>Right</option><option id="c_"+id+"center">Center</option></select></td>';
+		
+		}else if(currentBox.text.align.horizontal=="center"){
+		cols += '<td class="col-sm-1" disabled><select id="c_"+id+"alignmentH"  class="form-control"><option id="c_"+id+"left">Left</option><option id="c_"+id+"right">Right</option><option id="c_"+id+"center" selected>Center</option></select></td>';
+		
+		}
+		if(currentBox.text.align.vertical=="top"){
+		cols += '<td class="col-sm-1" disabled><select id="c_"+id+"alignmentV"  class="form-control"><option id="c_"+id+"top" selected>Top</option><option id="c_"+id+"bottom">Bottom</option><option id="c_"+id+"center">Center</option></select></td>';  
+		}else if(currentBox.text.align.vertical=="bottom"){
+		cols += '<td class="col-sm-1" disabled><select id="c_"+id+"alignmentV"  class="form-control"><option id="c_"+id+"top">Top</option><option id="c_"+id+"bottom" selected>Bottom</option><option id="c_"+id+"center">Center</option></select></td>';  
+		}else if(currentBox.text.align.vertical=="center"){
+		cols += '<td class="col-sm-1" disabled><select id="c_"+id+"alignmentV"  class="form-control"><option id="c_"+id+"top">Top</option><option id="c_"+id+"bottom">Bottom</option><option id="c_"+id+"center" selected>Center</option></select></td>';  	
+		}
+		if(currentBox.background.crop=="fullscreen"){
+			cols += '<td class="col-sm-1" disabled><select id="c_"+id+"crop"  class="form-control"><option id="c_"+id+"fulscreen" selected>FullScreen</option><option id="c_"+id+"fittoframe">FitToFrame</option><option id="c_"+id+"c_left">Left</option><option id="c_"+id+"c_right">Right</option></select></td>';
+		}else if(currentBox.background.crop=="fittoframe"){
+			cols += '<td class="col-sm-1" disabled><select id="c_"+id+"crop"  class="form-control"><option id="c_"+id+"fulscreen">FullScreen</option><option id="c_"+id+"fittoframe" selected>FitToFrame</option><option id="c_"+id+"c_left">Left</option><option id="c_"+id+"c_right">Right</option></select></td>';
+		}else if(currentBox.background.crop=="left"){
+		cols += '<td class="col-sm-1" disabled><select id="c_"+id+"crop"  class="form-control"><option id="c_"+id+"fulscreen">FullScreen</option><option id="c_"+id+"fittoframe">FitToFrame</option><option id="c_"+id+"c_left" selected>Left</option><option id="c_"+id+"c_right">Right</option></select></td>';
+			}else if(currentBox.background.crop=="right"){
+			cols += '<td class="col-sm-1" disabled><select id="c_"+id+"crop"  class="form-control"><option id="c_"+id+"fulscreen">FullScreen</option><option id="c_"+id+"fittoframe">FitToFrame</option><option id="c_"+id+"c_left">Left</option><option id="c_"+id+"c_right"  selected>Right</option></select></td>';
+		}
+		
+		if($("#style").val()=="HiRise"){
+	cols += '<td class="col-sm-1" disabled><select id="c_"+id+"style"  class="form-control"><option id="c_"+id+"fulscreen" selected>HiRise</option><option id="c_"+id+"fittoframe">Bulletin</option><option id="c_"+id+"c_left">Blankslate</option</select></td>';
+				}else if($("#style").val()=="Bulletin"){
+	cols += '<td class="col-sm-1" disabled><select id="c_"+id+"style"  class="form-control"><option id="c_"+id+"fulscreen">HiRise</option><option id="c_"+id+"fittoframe" selected>Bulletin</option><option id="c_"+id+"c_left">Blankslate</option>/select></td>';	
+		}else if($("#style").val()=="Standout"){
+			cols += '<td class="col-sm-1" disabled><select id="c_"+id+"style"  class="form-control"><option id="c_"+id+"fulscreen">HiRise</option><option id="c_"+id+"fittoframe">Bulletin</option><option id="c_"+id+"c_left" selected>Blankslate</option></select></td>';
+		}
+		cols += '<td><input type="button" class="ibtnDel btn btn-md btn-danger " onClick="deleteId('+id+')"  value="Delete"></td>';
+	   	cols += '<td><input type="button" class="btn btn-md btn-danger " onClick="copyId('+id+')"  value="Copy"></td>';
+	   
+	 	var newRow = $("<tr>");
+        newRow.append(cols);
+		$("table.order-list").append(newRow);
+
+}
+$(document).ready(function () {
+	$("#type").on('change', function() {
+		if(this.value=="Text"){
+			$("#source_url").attr("disabled",true);
+		}else{
+			$("#source_url").attr("disabled",false);
+		}
+	});
+js_parsed["blocks"]=[];
+var socket=null;
+uploadJson = function(name){
+	js_parsed["global"].style=$("#style").val().toLowerCase()
+	if($("#style").val().toLowerCase()=="hirise"){
+	js_parsed["global"].style="hiRise";
+	}
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.open('POST', '../../'+name+'_json');
+	xmlhttp.setRequestHeader('Content-Type', 'application/json');
+	xmlhttp.send(JSON.stringify(js_parsed));
+	xmlhttp.onreadystatechange = function () {
+		if (this.readyState == 4) {
+			var json=JSON.parse(this.response);
+			socket = io('http://'+json.socket_url+'?id='+json.id);
+			if(json.id=="none"){
+				socket.disconnect();
+			}
+			socket.on('status', function (data) {
+			if(data.status=="error"){
+				socket.disconnect();
+			}
+			var pretty = JSON.stringify(data, undefined, 4);
+			document.getElementById('myTextarea').value = pretty;
+			});
+			socket.on('disconnect', function(){
+				socket.removeAllListeners();
+				socket=null;
+			});
+		}
+	}
+}
+$("#submithdvideo").on("click", function(){
+	uploadJson("upload");
+});
+$("#submitjson").on("click", function(){
+	uploadJson("preview");
+});
+
+$("#addrow").on("click", function () {
+
+	var obj	= new Object();
+	obj={
+      "type": $("#type").val().toLowerCase(),
+      "timing": $("#timing").val(),
+      "voiceover": { "present": false, "source": "", "volume": 1 },
+      "text": {
+        "title": {
+          "content":$("#title").val(),
+          "fontSize": $("#size_font").val(),
+          "color": "#ffffff"
+        },
+        "subTitle": {
+          "content": $("#subtitle").val(),
+          "fontSize": $("#size_sub_font").val(),
+          "color": "#ffffff"
+        },
+        "legibility": false,
+        "legibilityColor": "#fff",
+        "accent": "#F8AF00",
+        "align": { "vertical": $("#alignmentV").val().toLowerCase(), "horizontal":$("#alignmentH").val().toLowerCase() }
+      },
+      "background": {
+        "media": $("#source_url").val(),
+        "dimensions": { "width": -1, "height": -1 },
+        "scale": 1,
+        "position": { "x":0, "y": 0 },
+        "rotate": 0,
+        "crop": $("#crop").val().toLowerCase(),
+        "color": "#ccc"
+      },
+      "id": 0
+    };
+	js_parsed["global"].style=$("#style").val().toLowerCase();
+	
+	var id=js_parsed["blocks"].push(obj)-1;
+        var newRow = $("<tr>");
+        var cols = "";
+        cols += '<td class="col-sm-1" disabled><input type="text" id="c_"+id+"source_url" class="form-control" value="'+$("#source_url").val()+'" /></td>';
+		if($("#type").val()=="Video"){
+		   cols += '<td class="col-sm-1" disabled><select id="c_"+id+"type"  class="form-control"><option id="c_"+id+"video" selected>Video</option><option id="c_"+id+"photo">Photo</option></select></td>'
+     
+		}else if($("#type").val()=="Photo"){
+		   cols += '<td class="col-sm-1" disabled><select id="c_"+id+"type"  class="form-control"><option id="c_"+id+"video">Video</option><option id="c_"+id+"photo" selected>Photo</option></select></td>'
+     
+		}else if($("#type").val()=="Text"){
+		   cols += '<td class="col-sm-1" disabled><select id="c_"+id+"type"  class="form-control"><option id="c_"+id+"video">Video</option><option id="c_"+id+"photo">Photo</option></select></td>'
+     
+		}
+        cols += '<td class="col-sm-1" disabled><input type="number" id="c_"+id+"timing"  class="form-control" value="'+$("#timing").val()+'"/></td>';
+		cols += '<td class="col-sm-6" disabled><input type="text" id="c_"+id+"title"  class="form-control" value="'+$("#title").val()+'"/></td>';
+		cols += '<td class="col-sm-6" disabled><input type="text" id="c_"+id+"subtitle"  class="form-control" value="'+$("#subtitle").val()+'"/></td>';
+		
+		if($("#alignmentH").val()=="Left"){
+		cols += '<td class="col-sm-1" disabled><select id="c_"+id+"alignmentH"  class="form-control"><option id="c_"+id+"left" selected>Left</option><option id="c_"+id+"right">Right</option><option id="c_"+id+"center">Center</option></select></td>';
+		}else if($("#alignmentH").val()=="Right"){
+		cols += '<td class="col-sm-1" disabled><select id="c_"+id+"alignmentH"  class="form-control"><option id="c_"+id+"left">Left</option><option id="c_"+id+"right" selected>Right</option><option id="c_"+id+"center">Center</option></select></td>';
+		
+		}else if($("#alignmentH").val()=="Center"){
+		cols += '<td class="col-sm-1" disabled><select id="c_"+id+"alignmentH"  class="form-control"><option id="c_"+id+"left">Left</option><option id="c_"+id+"right">Right</option><option id="c_"+id+"center" selected>Center</option></select></td>';
+		
+		}
+		if($("#alignmentV").val()=="Top"){
+	cols += '<td class="col-sm-1" disabled><select id="c_"+id+"alignmentV"  class="form-control"><option id="c_"+id+"top" selected>Top</option><option id="c_"+id+"bottom">Bottom</option><option id="c_"+id+"center">Center</option></select></td>';  
+			}else if($("#alignmentV").val()=="Bottom"){
+	cols += '<td class="col-sm-1" disabled><select id="c_"+id+"alignmentV"  class="form-control"><option id="c_"+id+"top">Top</option><option id="c_"+id+"bottom" selected>Bottom</option><option id="c_"+id+"center">Center</option></select></td>';  
+		
+		}else if($("#alignmentV").val()=="Center"){
+	cols += '<td class="col-sm-1" disabled><select id="c_"+id+"alignmentV"  class="form-control"><option id="c_"+id+"top">Top</option><option id="c_"+id+"bottom">Bottom</option><option id="c_"+id+"center" selected>Center</option></select></td>';  
+		
+		}
+		if($("#crop").val()=="FullScreen"){
+	cols += '<td class="col-sm-1" disabled><select id="c_"+id+"crop"  class="form-control"><option id="c_"+id+"fulscreen" selected>FullScreen</option><option id="c_"+id+"fittoframe">FitToFrame</option><option id="c_"+id+"c_left">Left</option><option id="c_"+id+"c_right">Right</option></select></td>';
+				}else if($("#crop").val()=="FitToFrame"){
+	cols += '<td class="col-sm-1" disabled><select id="c_"+id+"crop"  class="form-control"><option id="c_"+id+"fulscreen">FullScreen</option><option id="c_"+id+"fittoframe" selected>FitToFrame</option><option id="c_"+id+"c_left">Left</option><option id="c_"+id+"c_right">Right</option></select></td>';
+			
+		}else if($("#crop").val()=="Left"){
+	cols += '<td class="col-sm-1" disabled><select id="c_"+id+"crop"  class="form-control"><option id="c_"+id+"fulscreen">FullScreen</option><option id="c_"+id+"fittoframe">FitToFrame</option><option id="c_"+id+"c_left" selected>Left</option><option id="c_"+id+"c_right">Right</option></select></td>';
+			}else if($("#crop").val()=="Right"){
+			cols += '<td class="col-sm-1" disabled><select id="c_"+id+"crop"  class="form-control"><option id="c_"+id+"fulscreen">FullScreen</option><option id="c_"+id+"fittoframe">FitToFrame</option><option id="c_"+id+"c_left">Left</option><option id="c_"+id+"c_right"  selected>Right</option></select></td>';
+		}
+		
+		if($("#style").val()=="HiRise"){
+	cols += '<td class="col-sm-1" disabled><select id="c_"+id+"style"  class="form-control"><option id="c_"+id+"fulscreen" selected>HiRise</option><option id="c_"+id+"fittoframe">Bulletin</option><option id="c_"+id+"c_left">Blankslate</option</select></td>';
+				}else if($("#style").val()=="Bulletin"){
+	cols += '<td class="col-sm-1" disabled><select id="c_"+id+"style"  class="form-control"><option id="c_"+id+"fulscreen">HiRise</option><option id="c_"+id+"fittoframe" selected>Bulletin</option><option id="c_"+id+"c_left">Blankslate</option>/select></td>';
+			
+		}else if($("#style").val()=="Standout"){
+	cols += '<td class="col-sm-1" disabled><select id="c_"+id+"style"  class="form-control"><option id="c_"+id+"fulscreen">HiRise</option><option id="c_"+id+"fittoframe">Bulletin</option><option id="c_"+id+"c_left" selected>Blankslate</option></select></td>';
+			}
+		
+			
+       cols += '<td><input type="button" class="ibtnDel btn btn-md btn-danger " onClick="deleteId('+id+')"  value="Delete"></td>';
+	   cols += '<td><input type="button" class="btn btn-md btn-danger " onClick="copyId('+id+')"  value="Copy"></td>';
+        newRow.append(cols);
+        $("table.order-list").append(newRow);
+		$(".row input:text").val("");
+				$("#timing").val(5);
+        counter++;
+    });
+
+
+    $("table.order-list").on("click", ".ibtnDel", function (event) {
+        $(this).closest("tr").remove();       
+        counter -= 1
+    });
+
+
+});
+
+
+</script>
+<div class="container">
+    <table id="myTable" class=" table order-list">
+    <thead>
+        <tr>
+            <td>Source URL</td>
+            <td>Type</td>
+            <td>Timing</td>
+			<td>Title</td>
+			<td>Subtitle</td>
+			<td>Alignment Horizontal</td>
+			<td>Alignment Vertical</td>
+			<td>Crop</td>
+			<td>Style</td>
+        </tr>
+    </thead>
+    <tbody>
+        
+    </tbody>
+   
+</table>
+<div class="row">
+            <div class="col-sm-4">
+                <input type="text" id="source_url" required class="form-control" placeholder="Source URL" value="http://192.168.1.107:82/assets/Footage/id/720p-sample1.mp4" />
+            </div>
+            <div class="col-sm-4">
+                <select id="type"  class="form-control"><option id="1">Video</option><option id="photo">Photo</option><option id="text">Text</option></select>
+            </div>
+            <div class="col-sm-4">
+                <input type="number" id="timing" placeholder="Timing"  class="form-control" value="5"/>
+            </div></div><br>
+			<div class="row">
+            <div class="col-sm-6">
+				<div class="col-sm-2">
+                <div class="form-group">
+                <label for="size_font">FontSize</label>
+				<input type="number" id="size_font"  placeholder="Try sizes below 30 number" value=111 class="form-control"/>
+           </div> </div>
+				<div class="col-sm-10">
+				<div class="form-group">
+                <label for="title">Title</label>
+                
+                <input type="text" id="title" required placeholder="Title" class="form-control" value="Hello Shubham testing new text on new axis"/>
+            </div>
+		</div>
+			</div>
+			<div class="col-sm-6">
+				<div class="col-sm-2">
+				<div class="form-group">
+                <label for="size_sub_font">FontSize</label>
+				<input type="number" placeholder="Try sizes below 30 number" id="size_sub_font" value=60 class="form-control"/>
+           </div></div>
+				<div class="col-sm-10">
+				
+				<div class="form-group">
+                <label for="subtitle">Sub Title</label>
+                <input type="text" id="subtitle" required placeholder="Sub Title" value="Hello Shubham"  class="form-control"/>
+          </div>
+			</div>
+			</div>
+			</div>
+			<br>
+			<div class="row">
+			   <div class="col-sm-6">
+             <div class="form-group">
+                <label for="alignmentH">Alignment Horizontal</label>
+        
+                <select id="alignmentH"  class="form-control"><option id="1">Left</option><option id="right">Right</option><option id="center">Center</option></select>
+            </div></div>
+
+			   <div class="col-sm-6">
+             <div class="form-group">
+                <label for="alignmentV">Alignment Vertical</label>
+           
+                <select id="alignmentV"  class="form-control"><option id="1">Top</option><option id="bottom">Bottom</option><option id="center">Center</option></select>
+            </div>  
+			</div></div><br>
+			<div class="row">
+			<div class="col-sm-12"><div class="form-group">
+                <label for="crop">Crop Style</label>
+           
+                <select id="crop"  class="form-control"><option id="1">FullScreen</option><option id="fittoframe">FitToFrame</option><option id="c_left">Left</option><option id="c_right">Right</option></select>
+            </div></div></div>
+			<br>
+			<div class="row">
+			<div class="col-sm-12"> <div class="form-group">
+                <label for="style">Animation Style</label>
+                <select id="style"  class="form-control"><option id="c_left" selected="selected">Bulletin</option></select>
+            </div></div></div>
+			<br>
+			<div class="row">
+            <div class="col-sm-6" style="text-align: left;">
+                <input type="button" class="btn btn-lg btn-block " id="addrow" value="Add Row" />
+            </div>
+			<div class="col-sm-6" style="text-align: right;">
+                <input type="button" class="btn btn-lg btn-block " id="submithdvideo" value="Submit HD Video" />
+            </div>
+			</div>
+			<br>
+			<div class="row">
+			<div class="col-sm-12" style="text-align: left;">
+                <textarea id="myTextarea" class="form-control" rows='5'></textarea>
+            </div>
+			</div>
+</div>
