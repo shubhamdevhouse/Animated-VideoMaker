@@ -134,7 +134,7 @@ const Stream = require('stream').Transform
       fs.readdirSync(path).forEach((file, index) => {
         const curPath = Path.join(path, file);
         if (fs.lstatSync(curPath).isDirectory()) { // recurse
-          deleteFolderRecursive(curPath);
+          Utils.deleteFolderRecursive(curPath);
         } else { // delete file
           fs.unlinkSync(curPath);
         }

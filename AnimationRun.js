@@ -530,13 +530,13 @@ processResolution = function (id, hHeight, wWidth, bWidth, bHeight) {
 download = async function (id, urlString, path) {
     let url_host = new URL(urlString).hostname
     if (url_host == "localhost") {
-        sendError(id);
+        this.sendError(id);
     }
     await Utils.makeSynchronousRequest(urlString, path);
 
     if (!fs.existsSync(path)) {
 
-        sendError(id);
+        this.sendError(id);
 
     }
 }
@@ -566,7 +566,7 @@ let users=Config.users;
     users[id].blocksData = json["blocks"]
 
     if (users[id].blocksData.length <= 0) {
-        sendError(id)
+        this.sendError(id)
 
 
     }
