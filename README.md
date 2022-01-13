@@ -25,7 +25,7 @@ After that run command npm run start in one console window
 	
 run second command in other console window npm run worker
 	
-Run your ip address and port like http://192.168.1.107:82/
+Run your ip address and port like http://192.168.1.107:82/assets/
 
 Put video or pic url in url box
 
