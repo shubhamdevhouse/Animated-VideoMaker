@@ -76,3 +76,6 @@ typings/
 .fusebox/
 
 backup
+metrics
+fontcode/text.js
+fontcode/test.js
