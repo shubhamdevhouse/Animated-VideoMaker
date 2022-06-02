@@ -2,7 +2,6 @@
   "name": "animoto_clone",
   "version": "1.0.0",
   "main": "app.js",
-
   "scripts": {
     "start": "nodemon --max_old_space_size=4096 app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -19,11 +18,11 @@
   "dependencies": {
     "@mixmaxhq/promise-pool": "^2.0.0",
     "amqplib": "^0.5.5",
+    "canvas": "^2.9.1",
     "detect-kerning": "^2.1.2",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "fontkit": "^1.8.0",
-    "fontmetrics": "^1.0.0",
     "gearmanode": "^0.9.2",
     "get-video-dimensions": "^1.0.0",
     "image-size": "^0.8.3",
@@ -33,5 +32,8 @@
     "socket.io": "^2.3.0",
     "winston": "^0.7.1",
     "yargs": "^15.0.2"
+  },
+  "devDependencies": {
+    "font-metrics": "^0.4.3"
   }
 }
