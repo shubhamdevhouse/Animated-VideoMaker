@@ -4,7 +4,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
 
-var json='{"name":"Project Name","uploadedMedia":[{"type":"photo","thumbnail":"http://192.168.1.103:82/assets/Image/id/print.jpg","url":"http://192.168.1.103:82/assets/Image/id/print.jpg"},{"type":"video","thumbnail":"http://192.168.1.103:82/assets/Footage/id/o.jpg","url":"http://192.168.1.103:82/assets/Footage/id/720p-sample1.mp4"},{"type":"photo","thumbnail":"http://192.168.1.103:82/assets/Image/id/o.jpg","url":"http://192.168.1.103:82/assets/Image/id/o.jpg"},{"type":"video","thumbnail":"http://192.168.1.103:82/assets/Footage/id/360p-sample1.jpg","url":"http://192.168.1.103:82/assets/Footage/id/270p-sample1.mp4"}],"global":{"backgroundMusic":{"source":"http://192.168.1.103:82/assets/Audio/audio.mpeg","volume":0.5,"loop":true,"trimAudio":{"trim":false,"value":{"start":0,"end":34}}},"filter":"none","aspectRatio":"landscape","style":"hiRise","font":"Roboto","watermark":{"source":"xxx","position":"top-right","size":"medium","transparency":true}},"blocks":[]}';
+var json='{"name":"Project Name","uploadedMedia":[{"type":"photo","thumbnail":"http://192.168.1.107:82/assets/Image/id/print.jpg","url":"http://192.168.1.107:82/assets/Image/id/print.jpg"},{"type":"video","thumbnail":"http://192.168.1.107:82/assets/Footage/id/o.jpg","url":"http://192.168.1.107:82/assets/Footage/id/720p-sample1.mp4"},{"type":"photo","thumbnail":"http://192.168.1.107:82/assets/Image/id/o.jpg","url":"http://192.168.1.107:82/assets/Image/id/o.jpg"},{"type":"video","thumbnail":"http://192.168.1.107:82/assets/Footage/id/360p-sample1.jpg","url":"http://192.168.1.107:82/assets/Footage/id/270p-sample1.mp4"}],"global":{"backgroundMusic":{"source":"http://192.168.1.107:82/assets/Audio/audio.mpeg","volume":0.5,"loop":true,"trimAudio":{"trim":false,"value":{"start":0,"end":34}}},"filter":"none","aspectRatio":"landscape","style":"hiRise","font":"Roboto","watermark":{"source":"xxx","position":"top-right","size":"medium","transparency":true}},"blocks":[]}';
 var counter = 0;
 var js_parsed = JSON.parse(json);
 function deleteId(id){
@@ -251,7 +251,7 @@ $("#addrow").on("click", function () {
 </table>
 <div class="row">
             <div class="col-sm-4">
-                <input type="text" id="source_url" required class="form-control" placeholder="Source URL" value="http://192.168.1.103:82/assets/Footage/id/720p-sample1.mp4" />
+                <input type="text" id="source_url" required class="form-control" placeholder="Source URL" value="http://192.168.1.107:82/assets/Footage/id/720p-sample1.mp4" />
             </div>
             <div class="col-sm-4">
                 <select id="type"  class="form-control"><option id="1">Video</option><option id="photo">Photo</option><option id="text">Text</option></select>

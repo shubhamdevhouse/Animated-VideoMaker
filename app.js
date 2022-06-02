@@ -15,19 +15,31 @@ app.use(function(req, res, next) {
 app.use('/assets',express.static(__dirname +  path.sep+'assets'));
 let preview_status = [];
 let animBullet =new AnimBulletin("Bulletin");
-
+let dynamicJson='\'{"name":"Project Name","uploadedMedia":[{"type":"photo","thumbnail":"http://192.168.1.107:82/assets/Image/id/print.jpg","url":"http://192.168.1.107:82/assets/Image/id/print.jpg"},{"type":"video","thumbnail":"http://192.168.1.107:82/assets/Footage/id/o.jpg","url":"http://192.168.1.107:82/assets/Footage/id/720p-sample1.mp4"},{"type":"photo","thumbnail":"http://192.168.1.107:82/assets/Image/id/o.jpg","url":"http://192.168.1.107:82/assets/Image/id/o.jpg"},{"type":"video","thumbnail":"http://192.168.1.107:82/assets/Footage/id/360p-sample1.jpg","url":"http://192.168.1.107:82/assets/Footage/id/270p-sample1.mp4"}],"global":{"backgroundMusic":{"source":"http://192.168.1.107:82/assets/Audio/audio.mpeg","volume":0.5,"loop":true,"trimAudio":{"trim":false,"value":{"start":0,"end":34}}},"filter":"none","aspectRatio":"landscape","style":"hiRise","font":"Roboto","watermark":{"source":"xxx","position":"top-right","size":"medium","transparency":true}},"blocks":[]}\';';
 let server = require('http').Server(app);
 let io = require('socket.io')(server);
 server.listen(Config.port);
 
+let modifyIndex =()=>{
+	let assetsTemplateIndex = __dirname +  path.sep+'assets'+path.sep+'template_index';
+	let assetsIndex = __dirname +  path.sep+'assets'+path.sep+'index.html';
+	fs.readFile(assetsTemplateIndex, 'utf8').then((data)=>{
+		  var result = data.replace(/192.168.1.107:82/g, Config.socket_ip);
+		
+		  fs.writeFile(assetsIndex, result, 'utf8');
+		});
+
+}
 let storeData = function (data, path) {
 	fs.writeFile(path,JSON.stringify(data)).catch(function(){console.error(err)});
 }
 let writeFileData = function(is_preview,id,id_string){
 	return new Promise(function(resolve,reject){
-		fs.writeFile(Config.output_directory+'id',id).then(()=>
+		console.log(Config.output_directory+'id',id,id_string);
+		fs.writeFile(Config.output_directory+'id',id.toString()).then(()=>
 		resolve({isPreview:is_preview,error:null, result:{status : "succeed",id:id_string}}))
 		.catch(function(err){
+			console.log(err);
 				resolve({isPreview:is_preview,error:'error', result:{status : "error",id:id_string}});
 		});
 })
@@ -59,6 +71,7 @@ let writeFolderId = function(is_preview,id) {
 				});
 	});
 };
+modifyIndex();
 app.get('/:id/:file', function (req, res) {
 	let id = req.params.id
 	let file = req.params.file
