@@ -89,6 +89,7 @@ const Stream = require('stream').Transform
 
 
       } else if (name == "convert") {
+        console.log(argv.join(' '));
         prc = spawn(config.convert_path, argv);
       } else if (name == "magick") {
         prc = spawn(config.magick_path, argv);

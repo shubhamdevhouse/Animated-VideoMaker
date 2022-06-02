@@ -57,6 +57,7 @@ const processFrames = function (date, id, commands, windex, wind, limit, channel
 function worker() {
     currentIndex = 0;
     amqp.connect('amqp://localhost', function (error, connection) {
+        console.log(error);
         connection.createChannel(function (error, channel) {
             let queue = 'render_cmd_dev';
             channel.assertQueue(queue, {
